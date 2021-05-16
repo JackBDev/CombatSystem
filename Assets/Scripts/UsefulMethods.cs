@@ -2,16 +2,16 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SharedFunctions : MonoBehaviour
+public class UsefulMethods : MonoBehaviour
 {
-    public Vector2 GetObjectSize(GameObject obj)
+    public static Vector2 GetObjectSize(GameObject obj)
     {
-        RectTransform rt = (RectTransform)obj.transform;
+        Renderer renderer = obj.GetComponent<Renderer>();
 
-        float width = rt.rect.width;
-        float height = rt.rect.height;
+        float width = renderer.bounds.size.x;
+        float height = renderer.bounds.size.y;
 
-        Vector2 dimensions = new Vector2(height, width);
+        Vector2 dimensions = new Vector2(width, height);
 
         return dimensions;
     }
