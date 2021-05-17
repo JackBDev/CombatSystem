@@ -10,21 +10,23 @@ public class GridSpawning : MonoBehaviour
     public GameObject tilePrefab;
 
     [HideInInspector]
-    public List<GameObject> friendlyTiles = new List<GameObject>();
+    public List<GameObject[]> friendlyTiles = new List<GameObject[]>();
     [HideInInspector]
-    public List<GameObject> enemyTiles = new List<GameObject>();
+    public List<GameObject[]> enemyTiles = new List<GameObject[]>();
 
+    private GameObject[] row;
     private UsefulMethods functions;
     private float tileWidth;
 
     void Awake()
     {
         tileWidth = UsefulMethods.GetObjectSize(tilePrefab.transform.GetChild(0).gameObject).x;
+        row = new GameObject[gridWidth];
 
-        StartCoroutine(SpawnTiles());
+        SpawnBattlefieldGrid();
     }
 
-    private IEnumerator SpawnTiles()
+    public void SpawnBattlefieldGrid()
     {
         Vector3 spawnPosition = transform.position;
         GameObject newTile;
@@ -34,17 +36,17 @@ public class GridSpawning : MonoBehaviour
         {
             newTile = Instantiate(tilePrefab, spawnPosition, Quaternion.identity);
             newTile.transform.parent = transform;
-            friendlyTiles.Add(newTile);
+            row[0] = newTile;
 
             for (int b = 1; b <= gridHeight; b++)
             {
                 spawnPosition = spawnPosition + new Vector3(-tileWidth, 0f, 0f);
                 newTile = Instantiate(tilePrefab, spawnPosition, Quaternion.identity);
                 newTile.transform.parent = transform;
-                friendlyTiles.Add(newTile);
-                yield return new WaitForSeconds(tileSpawnDelay);
+                row[b] = newTile;
             }
 
+            friendlyTiles.Add(row);
             spawnPosition = transform.position + new Vector3(0f, 0f, tileWidth * -a);
         }
 
@@ -55,18 +57,29 @@ public class GridSpawning : MonoBehaviour
         {
             newTile = Instantiate(tilePrefab, spawnPosition, Quaternion.identity);
             newTile.transform.parent = transform;
-            enemyTiles.Add(newTile);
+            row[0] = newTile;
 
             for (int b = 1; b <= gridHeight; b++)
             {
                 spawnPosition = spawnPosition + new Vector3(tileWidth, 0f, 0f);
                 newTile = Instantiate(tilePrefab, spawnPosition, Quaternion.identity);
                 newTile.transform.parent = transform;
-                enemyTiles.Add(newTile);
-                yield return new WaitForSeconds(tileSpawnDelay);
+                row[b] = newTile;
             }
-
+            enemyTiles.Add(row);
             spawnPosition = transform.position + new Vector3(tileWidth, 0f, tileWidth * -a);
         }
+
+        StartCoroutine(SpawnAnimationDelay());
+    }
+
+    private IEnumerator SpawnAnimationDelay()
+    {
+        for(int i = 1; i <= friendlyTiles.Count; i++)
+        {
+
+        }
+
+        yield return new WaitForSeconds(tileSpawnDelay);
     }
 }

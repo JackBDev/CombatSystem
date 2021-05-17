@@ -156,8 +156,6 @@ MonoBehaviour:
   gridWidth: 4
   tileSpawnDelay: 0.05
   tilePrefab: {fileID: 9001088349895839140, guid: 6547d4858d87d254caa886a446998a20, type: 3}
-  friendlyTiles: []
-  enemyTiles: []
 --- !u!4 &218751425
 Transform:
   m_ObjectHideFlags: 0
