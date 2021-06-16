@@ -14,7 +14,7 @@ public class GridSpawning : MonoBehaviour
     public GameObject tilePrefab;
 
     private List<GameObject[]> friendlyTiles = new List<GameObject[]>();
-    private List<GameObject> enemyTiles = new List<GameObject>();
+    private List<GameObject[]> enemyTiles = new List<GameObject[]>();
     private float tileWidth;
 
     void Awake()
@@ -24,6 +24,7 @@ public class GridSpawning : MonoBehaviour
         for(byte i = 0; i < gridWidth; i++)
         {
             friendlyTiles.Add(new GameObject[gridWidth]);
+            enemyTiles.Add(new GameObject[gridWidth]);
         }
 
         SpawnBattlefieldGrid();
@@ -34,81 +35,70 @@ public class GridSpawning : MonoBehaviour
         Vector3 spawnPosition = transform.position;
         GameObject newTile;
 
+        StartCoroutine(SpawnAnimationDelay());
+    }
+
+    IEnumerator SpawnAnimationDelay()
+    {
+        Vector3 spawnPosition = transform.position;
+        GameObject newTile;
+        WaitForSecondsRealtime wait = new WaitForSecondsRealtime(tileSpawnDelay);
+
         //Player's Grid
         for (byte a = 0; a < gridWidth; a++)
         {
+            spawnPosition = transform.position + new Vector3(0f, 0f, tileWidth * -a);
+
             newTile = Instantiate(tilePrefab, spawnPosition, Quaternion.identity);
+
             newTile.transform.parent = transform;
             newTile.transform.name = a.ToString() + 0.ToString();
+            newTile.transform.GetChild(0).GetComponent<Animator>().SetBool("Spawn", true);
+
             friendlyTiles[a][0] = newTile;
 
             for (byte b = 1; b <= gridHeight; b++)
             {
+                yield return wait;
                 spawnPosition = spawnPosition + new Vector3(-tileWidth, 0f, 0f);
-                newTile = Instantiate(tilePrefab, spawnPosition, Quaternion.identity);
-                newTile.transform.name = a.ToString() + b.ToString();
-                newTile.transform.parent = transform;
-                friendlyTiles[a][b] = newTile;
-            }
 
-            spawnPosition = transform.position + new Vector3(0f, 0f, tileWidth * -a);
+                newTile = Instantiate(tilePrefab, spawnPosition, Quaternion.identity);
+                
+                newTile.transform.parent = transform;
+                newTile.transform.name = a.ToString() + b.ToString();
+                newTile.transform.GetChild(0).GetComponent<Animator>().SetBool("Spawn", true);
+
+                friendlyTiles[a][b] = newTile;
+            } 
         }
 
-        spawnPosition = transform.position + new Vector3(tileWidth, 0f, 0f);
-
         //Enemy's Grid
-        for (byte a = 1; a <= gridWidth; a++)
+        for (byte a = 0; a < gridWidth; a++)
         {
+            spawnPosition = transform.position + new Vector3(tileWidth, 0f, tileWidth * -a);
+
             newTile = Instantiate(tilePrefab, spawnPosition, Quaternion.identity);
+
             newTile.transform.parent = transform;
             newTile.transform.name = a.ToString() + 0.ToString();
-            enemyTiles.Add(newTile);
+            newTile.transform.GetChild(0).GetComponent<Animator>().SetBool("Spawn", true);
+
+            enemyTiles[a][0] = newTile;
 
             for (byte b = 1; b <= gridHeight; b++)
             {
+                yield return wait;
                 spawnPosition = spawnPosition + new Vector3(tileWidth, 0f, 0f);
+
                 newTile = Instantiate(tilePrefab, spawnPosition, Quaternion.identity);
-                newTile.transform.name = a.ToString() + b.ToString();
+                
                 newTile.transform.parent = transform;
-                enemyTiles.Add(newTile);
+                newTile.transform.name = a.ToString() + b.ToString();
+                newTile.transform.GetChild(0).GetComponent<Animator>().SetBool("Spawn", true);
+
+                enemyTiles[a][b] = newTile;
             }
-            spawnPosition = transform.position + new Vector3(tileWidth, 0f, tileWidth * -a);
+            
         }
-
-        StartCoroutine(SpawnAnimationDelay());
-    }
-
-    private IEnumerator SpawnAnimationDelay()
-    {
-        WaitForSeconds wait = new WaitForSeconds(tileSpawnDelay);
-        
-        for (byte i = 0; i <= gridWidth * 2; i++)
-        {
-            byte row = i;
-
-            for(byte j = 0; j < i; j++)
-            {
-                if (j >= gridWidth || row >= gridWidth)
-                {
-                    if (row > 0)
-                    {
-                        row--;
-                    }
-                }
-                else
-                {
-                    Transform block = friendlyTiles[row][j].transform.GetChild(0);
-
-                    block.GetComponent<Animator>().SetBool("Spawn", true);
-
-                    if (row > 0)
-                    {
-                        row--;
-                    }
-                }
-            }
-
-            yield return wait; 
-        }  
     }
 }

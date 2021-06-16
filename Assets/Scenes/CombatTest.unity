@@ -154,7 +154,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   gridHeight: 3
   gridWidth: 4
-  tileSpawnDelay: 1
+  tileSpawnDelay: 0.1
   tilePrefab: {fileID: 9001088349895839140, guid: 6547d4858d87d254caa886a446998a20, type: 3}
 --- !u!4 &218751425
 Transform:
